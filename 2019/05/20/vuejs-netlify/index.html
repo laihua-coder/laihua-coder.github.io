@@ -1,0 +1,1111 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="使用GitLab的CI / CD管道将Vue.js应用程序部署到Netlify, 码农">
+    <meta name="description" content="设置从A到Z的持续集成管道：运行测试，构建应用程序并将其部署到Netlify。我们开始做吧！🤓
+
+到目前为止，您可能已经使用他们的UI将项目部署到Netlify，方法是链接GitHub/GitLab项目并设置构建应用程序的必要步骤。
+您可">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>使用GitLab的CI / CD管道将Vue.js应用程序部署到Netlify | 码农</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container" >
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light brand-logo-left">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">码农</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/friends" class="waves-effect waves-light">
+            
+            <i class="fa fa-address-book"></i>
+            
+            <span>友情链接</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
+        </a>
+    </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">码农</div>
+        <div class="logo-desc">
+            
+            这里，只求分享与免费；这里，不隐含扭曲的价值观，而是整合并充盈正能量
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        <li>
+            <a href="/friends" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-address-book"></i>
+                
+                友情链接
+            </a>
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/laihua-coder" class="waves-effect waves-light" target="_blank">
+                <i class="fa fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/laihua-coder" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('请输入访问本文章的密码')).toString(CryptoJS.enc.Hex)) {
+                alert('密码错误，将返回主页！');
+                location.href = '/';
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.90c.vip/vue-cover/img017.jpg?x-oss-process=image/format,webp')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        使用GitLab的CI / CD管道将Vue.js应用程序部署到Netlify
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    /* #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    } */
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s18 m18 l10">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                        <a href="/tags/vue/" target="_blank">
+                            <span class="chip bg-color">vue</span>
+                        </a>
+                        
+                        <a href="/tags/%E9%9B%86%E6%88%90/" target="_blank">
+                            <span class="chip bg-color">集成</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                        <a href="/categories/vue/" class="post-category" target="_blank">
+                            vue
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-05-20
+                </div>
+
+                
+                
+                <div class="info-break-policy">
+                    <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    2.6k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    9 分
+                </div>
+                
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>设置从A到Z的持续集成管道：运行测试，构建应用程序并将其部署到Netlify。我们开始做吧！🤓</p>
+<p><img src="https://img.90c.vip/code/img044.png?x-oss-process=image/format,webp" alt="图1"></p>
+<p>到目前为止，您可能已经使用他们的UI将项目部署到<a target="_blank" rel="noopener" href="https://www.netlify.com/">Netlify</a>，方法是链接GitHub/GitLab项目并设置构建应用程序的必要步骤。</p>
+<p>您可能不知道的是Netlify有一个基于节点的<a target="_blank" rel="noopener" href="https://cli.netlify.com/">CLI工具</a>，可以让您从终端进行部署。</p>
+<p>此外，GitLab的CI/CD管道免费提供CI管道2,000分钟/月，我们可以使用它来自动化我们的测试和部署过程。</p>
+<h2 id="本章内容"><a href="#本章内容" class="headerlink" title="本章内容"></a>本章内容</h2><p><strong>1. 创建一个新项目;</strong><br><strong>2. 将它推到GitLab;</strong><br><strong>3. 将它推到GitLab;</strong><br><strong>4. 安装netlify-cli;</strong><br><strong>5. 准备GitLab CI/CD</strong><br><strong>6. 定义CI / CD管道</strong><br><strong>7. 结果：它混合了吗？</strong><br><strong>8. 添加暂存预览;</strong><br><strong>9. 下一步;</strong><br><strong>10. 回购与资源;</strong></p>
+<h2 id="创建一个新项目"><a href="#创建一个新项目" class="headerlink" title="创建一个新项目"></a>创建一个新项目</h2><p>我们可以使用命令<code>vue create vue_netlify_ci</code>创建一个名为<code>vue_netlify_ci</code>的新项目</p>
+<p>这是我使用的配置：</p>
+<p><img src="https://img.90c.vip/code/img045.png?x-oss-process=image/format,webp" alt="Babel + Router + Vuex + Sass/SCSS Pre-processors(node-sass) + Standard Linter + Jest Unit-testing"></p>
+<h2 id="将其推送到GitLab仓库"><a href="#将其推送到GitLab仓库" class="headerlink" title="将其推送到GitLab仓库"></a>将其推送到GitLab仓库</h2><p>标准程序。</p>
+<h2 id="全局安装netlify-cli"><a href="#全局安装netlify-cli" class="headerlink" title="全局安装netlify-cli"></a>全局安装netlify-cli</h2><p>运行<code>npm i netlify-cli -g</code>并通过键入<code>netlify -v</code>确保它已正确安装。控制台会打印出<code>netlify-cli/2.11.10 darwin-x64 node-v10.15.3</code>的信息。</p>
+<blockquote>
+<p>没有找到指令？<br>当您尝试运行netlify时，您可能会收到“未找到命令”消息。这很可能是由于某些问题与您首先安装Node + npm有关。要解决这个问题，你需要更新$ PATH env（对于MacOS / Linux，这个过程应该大致相同。）<br>查看安装netlify-cli的结果，它应该类似于：</p>
+</blockquote>
+<pre class=" language-js"><code class="language-js"><span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>Cellar<span class="token operator">/</span>node<span class="token operator">/</span><span class="token number">8.7</span><span class="token punctuation">.</span><span class="token number">0</span><span class="token operator">/</span>bin<span class="token operator">/</span>ntl <span class="token operator">-</span><span class="token operator">></span> <span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>Cellar<span class="token operator">/</span>node<span class="token operator">/</span><span class="token number">8.7</span><span class="token punctuation">.</span><span class="token number">0</span><span class="token operator">/</span>lib<span class="token operator">/</span>node_modules<span class="token operator">/</span>netlify<span class="token operator">-</span>cli<span class="token operator">/</span>bin<span class="token operator">/</span>run
+<span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>Cellar<span class="token operator">/</span>node<span class="token operator">/</span><span class="token number">8.7</span><span class="token punctuation">.</span><span class="token number">0</span><span class="token operator">/</span>bin<span class="token operator">/</span>netlify <span class="token operator">-</span><span class="token operator">></span> <span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>Cellar<span class="token operator">/</span>node<span class="token operator">/</span><span class="token number">8.7</span><span class="token punctuation">.</span><span class="token number">0</span><span class="token operator">/</span>lib<span class="token operator">/</span>node_modules<span class="token operator">/</span>netlify<span class="token operator">-</span>cli<span class="token operator">/</span>bin<span class="token operator">/</span>run
+<span class="token operator">+</span> netlify<span class="token operator">-</span>cli@<span class="token number">2.11</span><span class="token punctuation">.</span><span class="token number">10</span>
+updated <span class="token number">1</span> <span class="token keyword">package</span> <span class="token keyword">in</span> <span class="token number">5</span><span class="token punctuation">.</span>123s</code></pre>
+<blockquote>
+<p>在我的例子中，netlify可以在<code>/usr/local/Cellar/node/8.7.0/bin/</code>中找到这就是我们需要添加到<code>.bash_profile</code>的行。为此，使用<code>vim~ / .bash_profile</code>进入它并添加行<code>export PATH =/usr/local/Cellar/ node/8.7.0/bin/：$PATH</code>（注意你需要根据你的输出改变它）。<br>保存并运行source~ / .bash_profile，现在可以在终端中访问netlify。</p>
+</blockquote>
+<h2 id="准备Netlify-for-CI"><a href="#准备Netlify-for-CI" class="headerlink" title="准备Netlify for CI"></a>准备Netlify for CI</h2><h3 id="将您的仓库链接到新的Netlify项目"><a href="#将您的仓库链接到新的Netlify项目" class="headerlink" title="将您的仓库链接到新的Netlify项目"></a>将您的仓库链接到新的Netlify项目</h3><p>运行<code>netlify init --manual</code>并按照以下向导步骤操作：</p>
+<ol>
+<li>选择：创建和配置新站点</li>
+<li>给它一个名字（可选）（我们称之为<code>vue-netlify-ci</code>）</li>
+<li>选择您的团队（如果有）并按Enter键完成。</li>
+</ol>
+<blockquote>
+<p>注意：如果您是第一次使用netlify CLI，系统会提示您授权连接到您的帐户（它将使用授权UI打开浏览器窗口）。</p>
+</blockquote>
+<p>在这些之后，你将在Netlify中创建你的项目，但它不会被部署（因为我们还没有告诉它如何这样做）。</p>
+<p><img src="https://img.90c.vip/code/img045.png?x-oss-process=image/format,webp" alt="一切都好。在继续之前，我们实际上需要一个站点ID。"></p>
+<p>我们现在有一个站点ID，我们需要<code>GitLab YAML</code>指令。</p>
+<h3 id="生成个人访问令牌"><a href="#生成个人访问令牌" class="headerlink" title="生成个人访问令牌"></a>生成个人访问令牌</h3><p>如果您已登录Netlify，请单击此处直接转到右侧部分。作为参考，它位于用户设置&gt;应用程序下。</p>
+<p>为令牌添加描述，例如CI，并将其保存在安全的地方！使用生成的令牌退出该页面后，您将无法再检索它。如果你丢失它，你需要生成一个新的。</p>
+<h3 id="设置Netlify的配置文件"><a href="#设置Netlify的配置文件" class="headerlink" title="设置Netlify的配置文件"></a>设置Netlify的配置文件</h3><p>我们可以描述Netlify如何使用TOML标记语言构建和部署您的网站。在我们的例子中，只需在项目的根目录下创建一个名为netlify.toml的文件，其中包含以下内容：</p>
+<p>这里发生了什么事？我们只是告诉Netlify哪个目录包含构建生成的部署就绪资产。</p>
+<blockquote>
+<p>（注意：在我们的例子中，我们使用GitLab的运行程序构建应用程序并将所有捆绑包一起部署，而您通常使用<code>command =“npm run build</code>告诉Netlify首先构建应用程序）。</p>
+</blockquote>
+<p>我们现在有一个访问令牌，站点的ID，我们告诉Netlify如何处理部署过程。在GitLab上。</p>
+<h2 id="准备GitLab-CI-CD"><a href="#准备GitLab-CI-CD" class="headerlink" title="准备GitLab CI / CD"></a>准备GitLab CI / CD</h2><p>GitLab的CI/CD非常简单。如果您推送到repo并且它在项目中检测到<code>.gitlab-ci.yml</code>文件，它将使用<a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/user/gitlab_com/#shared-runners">共享运行</a>程序根据提供的说明运行其中的脚本。</p>
+<p><img src="https://img.90c.vip/code/img047.png" alt="访问CI/CD配置"></p>
+<p>在设置文件之前，我们需要设置环境变量，以便我们的.yml不会暴露任何敏感数据，即访问令牌和站点ID。</p>
+<p>为此，请导航到“设置”&gt;“CI / CD”并展开“变量”部分。</p>
+<p>添加<code>NETLIFY_AUTH_TOKEN</code>和<code>NETLIFY_SITE_ID</code>，每个都有各自的值。</p>
+<blockquote>
+<p>（提示：如果您不记得您的边ID，您可以在<code>.netlify/state.json</code>下的项目根目录中看到它）。</p>
+</blockquote>
+<p><img src="https://img.90c.vip/code/img048.png?x-oss-process=image/format,webp" alt="访问CI/CD配置"></p>
+<p>保存它们，我们现在准备好最后准备添加<code>.gitlab-ci.yml</code></p>
+<h2 id="定义CI-CD管道"><a href="#定义CI-CD管道" class="headerlink" title="定义CI/CD管道"></a>定义CI/CD管道</h2><p>GitLab CI/CD管道使用每个项目中名为<code>.gitlab-ci.yml</code>的YAML文件进行配置。</p>
+<p>在项目的根目录中，创建一个名为<code>.gitlab-ci.yml</code>的文件并添加以下内容：</p>
+<pre class=" language-js"><code class="language-js">image<span class="token punctuation">:</span> node<span class="token punctuation">:</span><span class="token number">10.15</span><span class="token punctuation">.</span><span class="token number">3</span>
+
+cache<span class="token punctuation">:</span>
+  untracked<span class="token punctuation">:</span> <span class="token boolean">true</span>
+  paths<span class="token punctuation">:</span>
+    <span class="token operator">-</span> node_modules<span class="token operator">/</span>
+
+stages<span class="token punctuation">:</span>
+  <span class="token operator">-</span> setup
+  <span class="token operator">-</span> test
+  <span class="token operator">-</span> build
+  <span class="token operator">-</span> deploy
+
+setup<span class="token punctuation">:</span>
+  stage<span class="token punctuation">:</span> setup
+  script<span class="token punctuation">:</span>
+    <span class="token operator">-</span> npm ci
+  only<span class="token punctuation">:</span>
+    <span class="token operator">-</span> master
+
+test<span class="token punctuation">:</span>
+  stage<span class="token punctuation">:</span> test
+  script<span class="token punctuation">:</span>
+    <span class="token operator">-</span> npm run test<span class="token punctuation">:</span>unit
+  only<span class="token punctuation">:</span>
+    <span class="token operator">-</span> master
+
+build<span class="token punctuation">:</span>
+  stage<span class="token punctuation">:</span> build
+  script<span class="token punctuation">:</span>
+    <span class="token operator">-</span> npm run build
+  artifacts<span class="token punctuation">:</span>
+    paths<span class="token punctuation">:</span>
+      <span class="token operator">-</span> dist
+  only<span class="token punctuation">:</span>
+    <span class="token operator">-</span> master
+
+deploy<span class="token punctuation">:</span>
+  stage<span class="token punctuation">:</span> deploy
+  script<span class="token punctuation">:</span>
+    <span class="token operator">-</span> npm i <span class="token operator">-</span>g netlify<span class="token operator">-</span>cli
+    <span class="token operator">-</span> netlify deploy <span class="token operator">--</span>site $NETLIFY_SITE_ID <span class="token operator">--</span>auth $NETLIFY_AUTH_TOKEN <span class="token operator">--</span>prod
+  dependencies<span class="token punctuation">:</span>
+    <span class="token operator">-</span> build
+  only<span class="token punctuation">:</span>
+    <span class="token operator">-</span> master</code></pre>
+<p>这将建立一个4阶段的管道，<br>1）设置项目的依赖关系;<br>2）进行我们的测试;<br>3）构建应用程序;<br>4）将其部署到Netlify。</p>
+<p>有关正在使用的内容的一些细节：</p>
+<p><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/#image"><strong>image:</strong></a> 指示要用于作业的Docker。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/caching/"><strong>cache:</strong></a>允许我们通过保持依赖关系来加速对给定作业的后续运行的调用，在本例中为node_modules。更多关于缓存的信息。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/README.html#artifacts"><strong>artifacts:</strong></a>指定我们想要为以下作业提供的文件/目录。</p>
+<p>[<strong>dependencies:</strong>]与工件一起使用。允许我们将构建阶段（dist文件夹）的结果用于部署阶段。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable"><strong>npm ci:</strong></a> “npm ci绕过一个软件包的package.json，从软件包的lockfile [..]中安装模块，为持续集成/持续部署过程的构建性能和可靠性提供了重大改进”。</p>
+<p><a target="_blank" rel="noopener" href="https://cli.netlify.com/commands/deploy/"><strong>netlify deploy:</strong></a>将我们的站点部署到Netlify，具体为：–site $ NETLIFY_SITE_ID和–auth $ NETLIFY_AUTH_TOKEN表示我们要部署的站点并对我们进行身份验证以进行部署（使用我们之前设置的CI / CD env变量）。–prod表示我们要部署到生产环境。</p>
+<h2 id="结果：它混合了吗？"><a href="#结果：它混合了吗？" class="headerlink" title="结果：它混合了吗？"></a>结果：它混合了吗？</h2><p>最后，添加并提交文件和<code>git push</code>（我们一直在处理master分支。理想情况下，你会推送到一个单独的分支，然后<code>PR + Merge into master</code>。只有对master的更改才会影响CI管道）。</p>
+<p>一旦你推/合并到master，GitLab就会触发它的runners并执行管道。</p>
+<p><img src="https://img.90c.vip/code/img049.gif?x-oss-process=image/format,webp" alt="通过, 通过, 通过 和 通过 😎"></p>
+<p>在GitLab项目中，导航到CI/CD&gt;管道或CI/CD&gt;作业以详细查看每个阶段的状态。如果出现错误，请务必单击该作业并查看日志以了解问题所在。</p>
+<p><img src="https://img.90c.vip/code/img049.png?x-oss-process=image/format,webp" alt="您可以在CI / CD&gt;作业中查看管道的各个作业"></p>
+<h2 id="添加暂存预览"><a href="#添加暂存预览" class="headerlink" title="添加暂存预览"></a>添加暂存预览</h2><p>你知道什么会酷吗？能够在单独的部署上预览新功能。NetLify可以选择在链接您的仓库时为每个PR / MR部署预览，就像通常使用UI一样。</p>
+<p>对我们来说不幸的是，似乎<a target="_blank" rel="noopener" href="https://github.com/netlify/cli/issues/275">现在不可能</a>仅使用我们的CI管道和/或Netlify的CLI来自动部署，因此我们将采用不同的方式。</p>
+<p>最后，我们将看到如下所示的流程：</p>
+<p><img src="https://img.90c.vip/code/img049.gif?x-oss-process=image/format,webp" alt="在发送到生产之前，我们可以预览测试分支和分段。"></p>
+<h3 id="在Netlify中创建一个项目"><a href="#在Netlify中创建一个项目" class="headerlink" title="在Netlify中创建一个项目"></a>在Netlify中创建一个项目</h3><p>在Netlify中创建一个新项目，该项目将托管登台以及合并请求的预览。我们将它命名为生产的名称，因此看起来像<code>staging-vue-netlify-ci.netlify.com</code>。这只是为了帮助区分两个项目，您可以使用任何您想要的命名。</p>
+<h3 id="将暂存项目链接到仓库"><a href="#将暂存项目链接到仓库" class="headerlink" title="将暂存项目链接到仓库"></a>将暂存项目链接到仓库</h3><p><img src="https://img.90c.vip/code/img052.png?x-oss-process=image/format,webp" alt="图1"></p>
+<p>选择项目后，选择将负责表示我们的暂存预览的开发分支。</p>
+<p>将构建命令定义为npm run build并将发布目录设置为dist。</p>
+<p>一旦你保存它，Netlify将观察开发分支并自动构建MR预览和生产构建（在这种情况下，生产被视为我们的阶段。真正的生产是由我们自己的管道记住吗？）。</p>
+<h3 id="创建合并请求到开发"><a href="#创建合并请求到开发" class="headerlink" title="创建合并请求到开发"></a>创建合并请求到开发</h3><p>记住上面的流程，您可以生成所需的部署：</p>
+<ul>
+<li>每个分支有一个合并请求开发（理想的快速测试功能，假设，快速展示）;</li>
+<li>一个用于发展部门，作为我们的集结环境;</li>
+</ul>
+<p>当合并到master中时，我们可以继续使用我们自己的CI管道进行应用测试。当然，您可以更改整个流程以满足您的需求。</p>
+<p><img src="https://img.90c.vip/code/img053.gif?x-oss-process=image/format,webp" alt="Netlify的部署被视为外部阶段。一旦合并到master中，就会使用我们自己的管道。"></p>
+<p>通过这种方式设置它的另一个好处是，我们的MR预览和开发部署的构建都由Netlify处理，这意味着我们不会浪费GitLab提供的CI分钟。👌</p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>正如您所看到的，使用GitLab设置连续集成和交付管道以在Netlify上托管Vue.js应用程序非常容易。</p>
+<h3 id="优化管道时间"><a href="#优化管道时间" class="headerlink" title="优化管道时间"></a>优化管道时间</h3><p>请记住，随着应用程序获得新功能，并且当您添加更多测试时，CI / CD管道的各个阶段将需要更长时间才能完成。重要的是要保持它的快速，不仅是为了敏捷流程而且是出于成本原因，因为GitLab每月仅为CI / CD提供2k的免费分钟⏱️。</p>
+<p>到目前为止，我还没有使用.gitlab-ci.yml的配置，我确​​信上面的时间可以大大减少。<a target="_blank" rel="noopener" href="https://blog.sparksuite.com/7-ways-to-speed-up-gitlab-ci-cd-times-29f60aab69f9">Wes Cossick</a>的这篇文章详细介绍了加快管道执行时间的一些方法。我将通过基准测试和改进来审阅本文，因为我改进了项目的管道。</p>
+<h2 id="回购和资源"><a href="#回购和资源" class="headerlink" title="回购和资源"></a>回购和资源</h2><p>这些提供的配置文件应该足够了，但是如果你想查看一下存储库（具有Netlify的部署状态标记），你可以在这里获取它（<a target="_blank" rel="noopener" href="https://gitlab.com/mstrlaw/vue_netlify_ci">https://gitlab.com/mstrlaw/vue_netlify_ci</a>）。</p>
+<p>资源/阅读材料：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://cli.vuejs.org/guide/deployment.html#general-guidelines">Vue.js部署通用指南</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/pipelines.html">创建和使用GitLab管道</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.netlify.com/docs/netlify-toml-reference/">netlify.toml参考</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/">.gitlab-ci.yml参考</a></p>
+</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>我希望你发现这篇文章有用！你可以关注我的博客。请在下面的评论中留下任何问题。我很乐意帮忙！</p>
+
+            </div>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <!-- <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载规则:
+                    </span>
+                    <a href="http://laihua-coder.github.io" class="b-link-green">码农</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2019/05/20/vuejs-netlify/" class="b-link-green">使用GitLab的CI / CD管道将Vue.js应用程序部署到Netlify</a>
+                </p>
+            </div> -->
+            
+
+    <div class="reprint" id="reprint-statement">
+        <p class="reprint-tip">
+            <i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;
+            <span>转载规则</span>
+        </p>
+        
+            <div class="center-align">
+                <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                    <img alt=""
+                         style="border-width:0"
+                         src="https://i.creativecommons.org/l/by/4.0/88x31.png"/>
+                </a>
+            </div>
+            <br/>
+            <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
+                  property="dct:title" rel="dct:type">
+                    《使用GitLab的CI / CD管道将Vue.js应用程序部署到Netlify》
+                </span> 由
+            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/05/20/vuejs-netlify/" property="cc:attributionName"
+               rel="cc:attributionURL">
+                左智文
+            </a> 采用
+            <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                知识共享署名 4.0 国际许可协议
+            </a>进行许可。
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+        </div>
+    </div>
+
+    
+    <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script src="/js/md5.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'da324003d4f455d3223a',
+        clientSecret: 'd163d589847ce0947cffe3344d17d49583fa9af5',
+        repo: 'laihua-coder.github.io',
+        owner: 'laihua-coder',
+        admin: "laihua-coder",
+        id: md5(location.pathname),
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6 overflow-policy" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2019/05/20/vue-storybook/">
+                    <div class="card-image">
+                        
+                        <img src="https://img.90c.vip/vue-cover/img005.jpg?x-oss-process=image/format,webp" class="responsive-img" alt="storybook与Nuxt.js一起使用的综合指南">
+                        
+                        <span class="card-title">storybook与Nuxt.js一起使用的综合指南</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            本章节，我们将重点关注storybook与Nuxt.js一起使用。
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-05-20
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/vue/" class="post-category" target="_blank">
+                                    vue
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/vue/" target="_blank">
+                        <span class="chip bg-color">vue</span>
+                    </a>
+                    
+                    <a href="/tags/nuxt/" target="_blank">
+                        <span class="chip bg-color">nuxt</span>
+                    </a>
+                    
+                    <a href="/tags/ssr/" target="_blank">
+                        <span class="chip bg-color">ssr</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6 overflow-policy" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/05/19/sass-part2/">
+                    <div class="card-image">
+                        
+                        <img src="https://img.90c.vip/sass-cover/sass025.jpg?x-oss-process=image/format,webp" class="responsive-img" alt="构建您的Sass项目">
+                        
+                        <span class="card-title">构建您的Sass项目</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            本章节，我们将学习如何使用sass来构建我们的Sass项目。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-05-19
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E5%89%8D%E7%AB%AF/" class="post-category" target="_blank">
+                                    前端
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/sass/" target="_blank">
+                        <span class="chip bg-color">sass</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('100')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />' +
+            '来源: 码农<br />' +
+            '作者: laihua-coder<br />' +
+            '链接: <a href="' + url + '">' + url + '</a><br />' +
+            '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {
+            bodyElement.removeChild(newdiv);
+        }, 200);
+    });
+</script>
+
+    </div>
+    <div id="toc-aside" class="expanded col l5 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m9 20 copy-right">
+           Copyright © 2019,左智文 Digital Co, Ltd.All Rights Reserved. <a href="http://www.beian.miit.gov.cn/" class="highlight" target="_blank">粤ICP备19062309号-2</a>
+            <!-- 本站由&copy;<a href="https://laihua-coder.github.io/" target="_blank">laihua-coder</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的 -->
+            <!-- <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建 -->
+            <!-- 
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">59.9k</span>
+             -->
+
+            
+			
+        </div>
+        <div class="col s12 m3 l2 social-link ">
+    <a href="https://github.com/laihua-coder" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fa fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1787044@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1787044" class="tooltipped" data-tooltip="QQ联系我: 1787044" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+    <script src="/libs/others/clicklove.js"></script>
+
+
+
+</body>
+</html>

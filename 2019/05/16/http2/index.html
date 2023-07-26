@@ -1,0 +1,1070 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="HTTP/2 优先级, 码农">
+    <meta name="description" content="HTTP/2保证了更快的Web和Cloudflare不久以前为所有客户推出了HTTP/2的访问。但HTTP/2的一个特性，优先级，不是因为它从根本上被打破了常规，而是因为浏览器实现它的方式。
+今天，Cloudflare正在推动对HTTP/2">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>HTTP/2 优先级 | 码农</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container" >
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light brand-logo-left">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">码农</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/friends" class="waves-effect waves-light">
+            
+            <i class="fa fa-address-book"></i>
+            
+            <span>友情链接</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
+        </a>
+    </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">码农</div>
+        <div class="logo-desc">
+            
+            这里，只求分享与免费；这里，不隐含扭曲的价值观，而是整合并充盈正能量
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        <li>
+            <a href="/friends" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-address-book"></i>
+                
+                友情链接
+            </a>
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/laihua-coder" class="waves-effect waves-light" target="_blank">
+                <i class="fa fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/laihua-coder" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = 'cf6332a8a73916763aad4c668cf637467a3d554fb2f1bbd50ffc0b17f55129bc';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('请输入访问本文章的密码')).toString(CryptoJS.enc.Hex)) {
+                alert('密码错误，将返回主页！');
+                location.href = '/';
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.90c.vip/http-cover/1360234_5e19.jpg?x-oss-process=image/format,webp')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        HTTP/2 优先级
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    /* #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    } */
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s18 m18 l10">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                        <a href="/tags/http/" target="_blank">
+                            <span class="chip bg-color">http</span>
+                        </a>
+                        
+                        <a href="/tags/%E7%BD%91%E7%BB%9C/" target="_blank">
+                            <span class="chip bg-color">网络</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                        <a href="/categories/%E7%BD%91%E7%BB%9C/" class="post-category" target="_blank">
+                            网络
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-05-16
+                </div>
+
+                
+                
+                <div class="info-break-policy">
+                    <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.6k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>HTTP/2保证了更快的Web和Cloudflare不久以前为所有客户推出了HTTP/2的访问。但HTTP/2的一个特性，优先级，不是因为它从根本上被打破了常规，而是因为浏览器实现它的方式。</p>
+<p>今天，Cloudflare正在推动对HTTP/2优先级的更改，这使我们的服务器能够控制优先级决策，从而真正提高Web的速度。</p>
+<p>历史上，浏览器已经控制决定加载Web内容的方式和时间。今天，我们正在为所有付费计划对该模型进行彻底改变，直接将控制权交给网站所有者。客户可以在Cloudflare仪表板的“速度”选项卡中启用“增强的HTTP/2优先级”：这将通过改进的调度方案覆盖浏览器默认设置，从而显着提高访问者体验（我们在多个场合看到的速度提高了50％）。借助Cloudflare Workers，网站所有者可以更进一步，并根据自己的特定需求完全定制体验。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>网页由数十个（有时数百个）单独的资源组成，这些资源由浏览器加载和组装到最终显示的内容中。这包括用户与之交互的可见内容（HTML，CSS，图像）以及网站本身的应用程序逻辑（JavaScript），广告，跟踪网站使用情况的分析以及营销跟踪信标。对这些资源的加载方式进行排序会对用户查看内容和与页面交互所需的时间产生重大影响。</p>
+<p>浏览器基本上是一个HTML处理引擎，它遍历HTML文档并按照从HTML开始到结束的顺序遵循说明，随着它的进行构建页面。对样式表（CSS）的引用告诉浏览器如何设置页面内容的样式，浏览器将延迟显示内容，直到它加载样式表（因此它知道如何设置要显示的内容的样式）。文档中引用的脚本可能有几种不同的行为。如果脚本被标记为“异步”或“延迟”，则浏览器可以继续处理文档，并在脚本可用时运行脚本代码。如果脚本没有标记为<code>异步</code>或<code>延迟</code>，则浏览器必须停止处理文档，直到脚本下载并执行为止，然后再继续。这些被称为“阻塞”脚本，因为它们阻止浏览器继续处理文档，直到它们被加载和执行。</p>
+<p>HTML文档分为两部分。文档的<code>&lt;head&gt;</code>位于开头，包含显示内容所需的浏览器样式表，脚本和其他说明。文档的<code>&lt;body&gt;</code>位于头部之后，包含浏览器窗口中显示的实际页面内容（尽管脚本和样式表也允许在主体中）。在浏览器到达文档正文之前，没有任何内容可以显示给用户，页面将保持空白，因此尽可能快地浏览文档的头部非常重要。如果你想深入了解细节，“HTML5 rocks”有一个关于浏览器如何工作的精彩教程。</p>
+<p>浏览器通常负责确定加载构建页面所需的不同资源的顺序并继续处理文档。在HTTP/1.x的情况下，浏览器限制它可以一次从任何一个服务器请求多少内容（通常每个连接一次有6个连接和一个资源），因此排序严格由浏览器的方式请求。使用HTTP/2，事情变化非常显着。浏览器可以立即请求所有资源（至少一旦它知道它们），它就向服务器提供有关如何传递资源的详细说明。</p>
+<h2 id="最优资源排序"><a href="#最优资源排序" class="headerlink" title="最优资源排序"></a>最优资源排序</h2><p>对于页面加载周期的大多数部分，存在最佳的资源排序，这将导致最快的用户体验（并且最佳和非最佳之间的差异可能很大 - 多达50％或更多。</p>
+<p>如上所述，在浏览器可以呈现任何内容之前的页面加载周期的早期，它在CSS上被阻止并阻止HTML的<code>&lt;head&gt;</code>部分中的JavaScript。在加载周期的这一部分期间，最好使用100％的连接带宽来下载阻塞资源，并按照HTML中定义的顺序一次下载一个。这使得浏览器在下载下一个阻塞资源时解析并执行每个项目，允许下载和执行流水线。</p>
+<p><img src="https://img.90c.vip/code/img007.png?x-oss-process=image/format,webp" alt="图1"></p>
+<p>当并行下载或一个接一个地下载脚本时，脚本花费相同的时间下载，但是通过顺序下载它们可以处理第一个脚本并在下载第二个脚本时执行。</p>
+<p>一旦加载渲染阻止内容，事情会变得更有趣，最佳加载可能取决于特定网站甚至业务优先级（用户内容与广告与分析等）。特别是字体可能很难，因为浏览器仅在将样式表应用于即将显示的内容之后才发现它需要的字体，所以当浏览器知道字体时，需要显示已经存在的文本准备好被吸引到屏幕上。获取字体的任何延迟最终都会在屏幕上显示空白文本（或使用错误的字体显示文本）。</p>
+<p>通常需要考虑一些权衡：</p>
+<ul>
+<li>应尽快加载页面可见部分（视口）中的自定义字体和可见图像。它们直接影响用户对页面加载的视觉体验。</li>
+<li>非阻塞JavaScript应该相对于其他JavaScript资源以串行方式下载，因此每个JavaScript的执行都可以通过下载进行流水线操作。JavaScript可能包括面向用户的应用程序逻辑以及分析跟踪和营销信标，并且延迟它们可能导致业务跟踪的指标下降。</li>
+<li>图像可以从并行下载中受益。图像文件的前几个字节包含浏览器布局可能需要的图像尺寸，并行的逐行图像下载可以在视觉上完成，传输的字节大约占50％。</li>
+</ul>
+<p>权衡这些权衡，一种在大多数情况下运作良好的策略是：</p>
+<ul>
+<li>自定义字体按顺序下载并使用可见图像分割可用带宽。</li>
+<li>可见图像并行下载，在其中分割带宽的“图像”份额。</li>
+<li>当没有更多字体或可见图像待处理时：<ul>
+<li>非阻塞脚本按顺序下载，并使用不可见图像分割可用带宽</li>
+<li>不可见的图像并行下载，在它们之间分割带宽的“图像”份额。</li>
+</ul>
+</li>
+</ul>
+<p>这样，尽可能快地加载用户可见的内容，尽可能少地延迟应用程序逻辑，并且以尽可能快地完成布局的方式加载不可见图像。</p>
+<h2 id="范例"><a href="#范例" class="headerlink" title="范例"></a>范例</h2><p>为了便于说明，我们将使用典型电子商务网站的简化产品类别页面。在此示例中，页面具有：</p>
+<ul>
+<li>页面本身的HTML文件，由蓝色框表示。</li>
+<li>1个外部样式表（CSS文件），由绿色框表示。</li>
+<li>4个外部脚本（JavaScript），由橙色框表示。其中2个脚本在页面开头处阻塞，2个脚本是异步的。阻止脚本框使用较暗的橙色阴影。</li>
+<li>1个自定义Web字体，由红色框表示。</li>
+<li>13个图像，用紫色框表示。页面徽标和4个产品图像在视口中可见，8个产品图像需要滚动才能看到。5个可见图像使用较深的紫色。</li>
+</ul>
+<p>为简单起见，我们假设所有资源都是相同的大小，每个资源在访问者的连接上下载需要1秒。加载一切总共需要20秒，但如何加载它会对体验产生巨大影响。</p>
+<p><img src="https://img.90c.vip/code/img008.png?x-oss-process=image/format,webp" alt="图2"></p>
+<p>这就是所描述的最佳加载在资源加载时在浏览器中的样子：</p>
+<p><img src="https://img.90c.vip/code/img009.gif?x-oss-process=image/format,webp" alt="图3"></p>
+<ul>
+<li>在加载HTML，CSS和阻止脚本的前4秒内，页面为空白，全部使用100％的连接。</li>
+<li>在4秒标记处，显示页面的背景和结构，没有文本或图像。一秒钟后，在5秒钟，显示页面的文本。</li>
+<li>从5-10秒开始，图像加载，开始时模糊但非常快速地锐化。大约7秒钟的标记几乎与最终版本无法区分。</li>
+<li>在10秒标记处，视口中的所有可视内容都已完成加载。在接下来的2秒内，加载并执行异步JavaScript，运行任何非关键逻辑（分析，营销标签等）。</li>
+<li>在最后的8秒内，其余的产品图像会加载，以便在用户滚动时准备就绪。</li>
+</ul>
+<h2 id="当前浏览器优先级"><a href="#当前浏览器优先级" class="headerlink" title="当前浏览器优先级"></a>当前浏览器优先级</h2><p>所有当前的浏览器引擎都实现了<code>不同的优先级策略</code>，其中没有一个是最佳的。</p>
+<p>Microsoft Edge和Internet Explorer<code>不支持优先级排序</code>，因此所有内容都回退到HTTP/2默认设置，即并行加载所有内容，在所有内容之间均匀分配带宽。Microsoft Edge将在未来的Windows版本中使用Chromium浏览器引擎，这将有助于改善这种情况。在我们的示例页面中，这意味着浏览器在大部分加载时间都停留在头部，因为图像正在减慢阻塞脚本和样式表的传输速度。</p>
+<p><img src="https://img.90c.vip/code/img010.png?x-oss-process=image/format,webp" alt="图4"></p>
+<p>在大多数内容显示之前，在视觉上会导致在空白屏幕上盯着空白屏幕19秒，然后显示文本的延迟时间为1秒。在观看动画进度时请耐心等待，因为对于19秒的空白屏幕，它可能感觉没有任何事情发生（即使它是）：</p>
+<p><img src="https://img.90c.vip/code/img011.gif?x-oss-process=image/format,webp" alt="图5"></p>
+<p>Safari并行加载所有资源，根据Safari认为它们的重要性来划分它们之间的带宽（使用脚本和样式表等渲染阻塞资源比图像更重要）。图像并行加载，但也与渲染阻止内容同时加载。</p>
+<p><img src="https://img.90c.vip/code/img012.png?x-oss-process=image/format,webp" alt="图6"></p>
+<p>虽然类似于Edge，所有内容同时下载，但通过为渲染阻止资源分配更多带宽，Safari可以更快地显示内容：</p>
+<p><img src="https://img.90c.vip/code/img013.gif?x-oss-process=image/format,webp" alt="图7"></p>
+<ul>
+<li>大约8秒后，样式表和脚本已完成加载，因此页面可以开始显示。由于图像是并行加载的，因此它们也可以在其部分状态下呈现（对于渐进图像而言模糊）。这仍然是最佳情况的两倍，但比我们用Edge看到的要好得多。</li>
+<li>在大约11秒时，字体已加载，因此可以显示文本并且已下载更多图像数据，因此图像将更加清晰。这与最佳装载情况下7秒标记周围的体验相当。</li>
+<li>对于剩余的9秒加载，图像变得更清晰，因为下载的数据越多，直到最终在20秒完成。</li>
+</ul>
+<p><code>Firefox</code>构建一个依赖关系树，该树将<code>资源分组</code>，然后安排这些组要么一个接一个地加载，要么在组之间共享带宽。在给定组内，资源共享带宽并同时​​下载。这些映像计划在渲染阻塞样式表之后加载并且并行加载，但渲染阻塞脚本和样式表也会并行加载，并且不会获得流水线操作的好处。</p>
+<p><img src="https://img.90c.vip/code/img014.png?x-oss-process=image/format,webp" alt="图8"></p>
+<p>在我们的示例中，由于图像被延迟到样式表完成之后，因此最终会比Safari快一点。</p>
+<p><img src="https://img.90c.vip/code/img015.gif?x-oss-process=image/format,webp" alt="图9"></p>
+<ul>
+<li>在6秒标记处，初始页面内容使用产品图像的背景和模糊版本进行渲染（与Safari的8秒和最佳情况的4秒相比）。</li>
+<li>在8秒时，字体已加载，文本可以与产品图像的稍微更清晰的版本一起显示（相比于Safari的11秒和Optimal案例中的7秒）。</li>
+<li>对于剩余的12秒加载，产品图像在剩余内容加载时变得更清晰。</li>
+</ul>
+<p><code>Chrome</code>（以及所有基于Chromium的浏览器）将资源优先排序到列表中。这对于渲染阻止内容非常有效，这些内容可以从按顺序加载中受益，但对图像效果不佳。在开始下一张图像之前，每张图像加载到100％完成。</p>
+<p><img src="https://img.90c.vip/code/img016.png?x-oss-process=image/format,webp" alt="图10"></p>
+<p>在实践中，这几乎与最佳装载情况一样好，唯一的区别是图像一次加载一个而不是并行加载：</p>
+<p><img src="https://img.90c.vip/code/img017.gif?x-oss-process=image/format,webp" alt="图11"></p>
+<ul>
+<li>直到5秒标记，Chrome体验与最佳情况相同，显示背景为4秒，文本内容为5。</li>
+<li>在接下来的5秒内，可见图像一次加载一个，直到它们在10秒标记处全部完成（与最佳情况相比，它们在7秒时稍微模糊并且在剩余的3秒内锐化）。</li>
+<li>在页面的可视部分在10秒完成后（与最佳情况相同），剩余的10秒用于运行异步脚本并加载隐藏图像（就像最佳加载情况一样）。</li>
+</ul>
+<h2 id="视觉比较"><a href="#视觉比较" class="headerlink" title="视觉比较"></a>视觉比较</h2><p>在视觉上，影响可能非常显着，即使它们都花费相同的时间来技术上加载所有内容：<br><img src="https://img.90c.vip/code/img018.gif?x-oss-process=image/format,webp" alt="图12"></p>
+<h2 id="服务器端优先级"><a href="#服务器端优先级" class="headerlink" title="服务器端优先级"></a>服务器端优先级</h2><p>客户端（浏览器）请求HTTP/2优先级排序，由服务器根据请求决定做什么。许多服务器不支持在确定优先级时执行任何操作，但对于那些服务器，它们都支持客户端的请求。另一个选择是考虑客户端的请求，决定在服务器端使用的最佳优先级。</p>
+<p>根据规范，HTTP/2优先级是一个依赖树，它需要完全了解所有正在进行的请求，以便能够相互优先考虑资源。这允许非常复杂的策略，但很难在浏览器或服务器端实现良好（由不同的浏览器策略和不同级别的服务器支持证明）。为了使优先级更易于管理，我们开发了一种更简单的优先级方案，该方案仍然具有优化调度所需的所有灵活性。</p>
+<p>Cloudflare优先级划分方案由64个优先级“级别”组成，在每个优先级内，有一组资源可确定如何在它们之间共享连接：</p>
+<p><img src="https://img.90c.vip/code/img019.png?x-oss-process=image/format,webp" alt="图13"></p>
+<p>在进入下一个较低优先级之前，将转移所有较高优先级的资源。</p>
+<p>在给定的优先级内，有3个不同的“并发”组：</p>
+<ul>
+<li>0：并发“0”组中的所有资源按照请求的顺序依次发送，使用100％的带宽。只有在下载了所有并发“0”组资源之后，才会考虑同一级别的其他组。</li>
+<li>1：并发“1”组中的所有资源按请求顺序依次发送。可用带宽在并发“1”组和并发“n”组之间均匀分配。</li>
+<li>n：并发“n”组中的资源是并行发送的，将它们之间可用的带宽分开。</li>
+</ul>
+<p>实际上，并发“0”组对于需要按顺序处理的关键内容（脚本，CSS等）非常有用。并发“1”组对于不太重要的内容非常有用，这些内容可以与其他资源共享带宽，但资源本身仍然可以从顺序处理（异步脚本，非渐进式图像等）中受益。并发“n”组对于受益于并行处理（渐进式图像，视频，音频等）的资源非常有用。</p>
+<h2 id="Cloudflare默认优先级"><a href="#Cloudflare默认优先级" class="headerlink" title="Cloudflare默认优先级"></a>Cloudflare默认优先级</h2><p>启用时，增强的优先级实现上述资源的“最佳”调度。应用的特定优先级如下所示：</p>
+<p><img src="https://img.90c.vip/code/img020.png?x-oss-process=image/format,webp" alt="图14"></p>
+<p>该优先化方案允许串行发送呈现阻止内容，然后并行发送可见图像，然后通过某种程度的共享来覆盖页面内容的其余部分以平衡应用程序和内容加载。“* If Detectable”警告是，并非所有浏览器都区分不同类型的样式表和脚本，但在所有情况下它仍然会明显更快。默认情况下快50％，特别是Edge和Safari访客并不罕见：</p>
+<p><img src="https://img.90c.vip/code/img021.png?x-oss-process=image/format,webp" alt="图15"></p>
+<h2 id="自定义工人的优先级"><a href="#自定义工人的优先级" class="headerlink" title="自定义工人的优先级"></a>自定义工人的优先级</h2><p>默认情况下更快，但事情变得非常有趣的是，配置优先级的能力也暴露给Cloudflare Workers，因此站点可以覆盖资源的默认优先级或实现自己的完整优先级方案。</p>
+<p>如果Worker为响应添加“cf-priority”标头，则Cloudflare边缘服务器将使用指定的优先级和并发响应。标头的格式是<code>&lt;priority&gt; / &lt;concurrency&gt;</code>，所以像<code>response.headers.set（&#39;cf-priority&#39;，“30/0”）</code>;对于给定的响应，将优先级设置为30，并发度为0。类似地，“30/1”将并发设置为1，“30 / n”将并发设置为n。</p>
+<p>通过这种灵活性，站点可以调整资源优先级以满足其需求。例如，在浏览器识别出它们位于视口中之前，提升某些关键异步脚本的优先级或增加图像的优先级。</p>
+<p>为了帮助通知任何优先级决策，Workers运行时还在传递给Worker的fetch事件侦听器（request.cf.requestPriority）的请求对象中公开浏览器请求的优先级信息。传入的请求优先级是以分号分隔的属性列表，其类似于：“weight = 192; exclusive = 0; group = 3; group-weight = 127”。</p>
+<ul>
+<li><code>weight</code>：HTTP/2优先级的浏览器请求权重。</li>
+<li><code>exclusive</code>：浏览器请求的HTTP/2独占标志（基于Chromium的浏览器为1，其他为0）。</li>
+<li><code>group</code>：请求组的HTTP/2流ID（Firefox仅为非零）。</li>
+<li><code>group-weight</code>：请求组的HTTP/2权重（Firefox仅为非零）。</li>
+</ul>
+<h2 id="这仅仅是个开始"><a href="#这仅仅是个开始" class="headerlink" title="这仅仅是个开始"></a>这仅仅是个开始</h2><p>调整和控制响应优先级的能力是许多未来工作将从中受益的基本构建块。我们将在它之上实现我们自己的高级优化，但是通过将它暴露在Workers中，我们还向网站和研究人员开放，以尝试不同的优先级策略。通过Apps Marketplace，公司还可以在Workers平台之上构建新的优化服务，并使其可供其他站点使用。</p>
+<p>如果您使用Pro计划或更高版本，请转到Cloudflare仪表板中的速度选项卡，然后启用“增强的HTTP/2优先级”以加速您的站点。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>我希望你发现这篇文章有用！你可以关注我的博客。请在下面的评论中留下任何问题。我很乐意帮忙！</p>
+
+            </div>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <!-- <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载规则:
+                    </span>
+                    <a href="http://laihua-coder.github.io" class="b-link-green">码农</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2019/05/16/http2/" class="b-link-green">HTTP/2 优先级</a>
+                </p>
+            </div> -->
+            
+
+    <div class="reprint" id="reprint-statement">
+        <p class="reprint-tip">
+            <i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;
+            <span>转载规则</span>
+        </p>
+        
+            <div class="center-align">
+                <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                    <img alt=""
+                         style="border-width:0"
+                         src="https://i.creativecommons.org/l/by/4.0/88x31.png"/>
+                </a>
+            </div>
+            <br/>
+            <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
+                  property="dct:title" rel="dct:type">
+                    《HTTP/2 优先级》
+                </span> 由
+            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/05/16/http2/" property="cc:attributionName"
+               rel="cc:attributionURL">
+                左智文
+            </a> 采用
+            <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                知识共享署名 4.0 国际许可协议
+            </a>进行许可。
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+        </div>
+    </div>
+
+    
+    <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script src="/js/md5.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'da324003d4f455d3223a',
+        clientSecret: 'd163d589847ce0947cffe3344d17d49583fa9af5',
+        repo: 'laihua-coder.github.io',
+        owner: 'laihua-coder',
+        admin: "laihua-coder",
+        id: md5(location.pathname),
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6 overflow-policy" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2019/05/17/http2-1/">
+                    <div class="card-image">
+                        
+                        <img src="https://img.90c.vip/http-cover/1360234_5e19.jpg?x-oss-process=image/format,webp" class="responsive-img" alt="渐进式图像的并行流">
+                        
+                        <span class="card-title">渐进式图像的并行流</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            本章节，我们将重点关注图片显示优化之渐进式图像的并行流
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-05-17
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E7%BD%91%E7%BB%9C/" class="post-category" target="_blank">
+                                    网络
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/http/" target="_blank">
+                        <span class="chip bg-color">http</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%BD%91%E7%BB%9C/" target="_blank">
+                        <span class="chip bg-color">网络</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6 overflow-policy" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/05/14/font-end-website/">
+                    <div class="card-image">
+                        
+                        <img src="https://img.90c.vip/other-cover/1554052_a370.jpg?x-oss-process=image/format,webp" class="responsive-img" alt="前端常用网站">
+                        
+                        <span class="card-title">前端常用网站</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            本章节，主要就前端开发中常用的一些网站做一个整理。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-05-14
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E7%BD%91%E7%AB%99/" class="post-category" target="_blank">
+                                    网站
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%BD%91%E7%AB%99/" target="_blank">
+                        <span class="chip bg-color">网站</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('100')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />' +
+            '来源: 码农<br />' +
+            '作者: laihua-coder<br />' +
+            '链接: <a href="' + url + '">' + url + '</a><br />' +
+            '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {
+            bodyElement.removeChild(newdiv);
+        }, 200);
+    });
+</script>
+
+    </div>
+    <div id="toc-aside" class="expanded col l5 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m9 20 copy-right">
+           Copyright © 2019,左智文 Digital Co, Ltd.All Rights Reserved. <a href="http://www.beian.miit.gov.cn/" class="highlight" target="_blank">粤ICP备19062309号-2</a>
+            <!-- 本站由&copy;<a href="https://laihua-coder.github.io/" target="_blank">laihua-coder</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的 -->
+            <!-- <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建 -->
+            <!-- 
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">59.9k</span>
+             -->
+
+            
+			
+        </div>
+        <div class="col s12 m3 l2 social-link ">
+    <a href="https://github.com/laihua-coder" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fa fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1787044@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1787044" class="tooltipped" data-tooltip="QQ联系我: 1787044" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+    <script src="/libs/others/clicklove.js"></script>
+
+
+
+</body>
+</html>
